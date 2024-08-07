@@ -47,7 +47,7 @@ class Command(BaseCommand):
             brand = random.choice(list(brand_objs.values()))
             product = Product(
                 name=row['producto'],
-                slug=row['producto'].lower().replace(' ', '-'),
+                slug=row['producto'].lower().replace(' ', '-').replace('/', '-').replace('.', ''),
                 description=f"Descripción de {row['producto']}",
                 price = int(row['precio'].split(' ')[1].replace('.', '').strip()),
                 discount=random.randint(0, 25),
