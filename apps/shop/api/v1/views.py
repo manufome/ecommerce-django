@@ -12,6 +12,9 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     lookup_field = 'slug'
     filterset_class = ProductFilter
+    search_fields = ['name', 'description']
+    ordering_fields = ['price', 'created_at']
+
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.filter(parent=None)
