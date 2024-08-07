@@ -53,6 +53,12 @@ class ProductSerializer(serializers.ModelSerializer):
         representation['stock'] = str(representation['stock'])
         return representation
 
+class HomeSerializer(serializers.Serializer):
+    best_selling = ProductSerializer(many=True)
+    featured = ProductSerializer(many=True)
+    latest = ProductSerializer(many=True)
+    on_sale = ProductSerializer(many=True)
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
