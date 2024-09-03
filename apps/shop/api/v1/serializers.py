@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 from apps.shop.models import Product, Category, Brand, ProductImage, Wishlist
-from django.contrib.auth.models import User
+
 
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
@@ -59,14 +59,11 @@ class HomeSerializer(serializers.Serializer):
     latest = ProductSerializer(many=True)
     on_sale = ProductSerializer(many=True)
 
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('id', 'username', 'email')
 
-class WishlistSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
-    products = ProductSerializer(many=True, read_only=True)
-    class Meta:
-        model = Wishlist
-        fields = '__all__'
+
+# class WishlistSerializer(serializers.ModelSerializer):
+#     user = UserSerializer()
+#     products = ProductSerializer(many=True, read_only=True)
+#     class Meta:
+#         model = Wishlist
+#         fields = '__all__'

@@ -1,7 +1,7 @@
 # Views for the shop app
 # https://www.django-rest-framework.org/api-guide/filtering/  reference for filtering ✏
 
-from apps.shop.api.v1.serializers import ProductSerializer, CategorySerializer, BrandSerializer, WishlistSerializer, HomeSerializer
+from apps.shop.api.v1.serializers import ProductSerializer, CategorySerializer, BrandSerializer, HomeSerializer
 from apps.shop.models import Product, Category, Brand, Wishlist
 from rest_framework import viewsets, generics  
 from .filters import ProductFilter
@@ -39,15 +39,18 @@ class ProductViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         previous = Product.objects.filter(id__lt=instance.id).order_by('-id').first()
         next = Product.objects.filter(id__gt=instance.id).order_by('id').first()
+        related = Product.objects.filter(category=instance.category).exclude(id=instance.id).order_by('?')[:4]
 
         serializer = self.get_serializer(instance)
         previous_serializer = self.get_serializer(previous) if previous else None
         next_serializer = self.get_serializer(next) if next else None
+        related_serializer = self.get_serializer(related, many=True)
         
         return Response({
             'product': serializer.data,
             'previous': previous_serializer.data if previous_serializer else None,
-            'next': next_serializer.data if next_serializer else None
+            'next': next_serializer.data if next_serializer else None,
+            'related': related_serializer.data if related_serializer else None
         })
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -58,12 +61,12 @@ class BrandViewSet(viewsets.ModelViewSet):
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
 
-class WishlistViewSet(viewsets.ModelViewSet):
-    queryset = Wishlist.objects.all()
-    serializer_class = WishlistSerializer
+# class WishlistViewSet(viewsets.ModelViewSet):
+#     queryset = Wishlist.objects.all()
+#     serializer_class = WishlistSerializer
 
-    def get_queryset(self):
-        return Wishlist.objects.filter(user=self.kwargs['user_id'])
+#     def get_queryset(self):
+#         return Wishlist.objects.filter(user=self.kwargs['user_id'])
 
 
 

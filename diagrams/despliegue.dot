@@ -1,0 +1,38 @@
+digraph DeploymentDiagram {
+    // Estilo general
+    fontname="Roboto";
+    fontsize=10;
+    rankdir=LR;
+    
+    // Nodos de servicios y componentes
+    node [shape=box, fontname="Roboto"];
+
+    Internet [label="Internet", shape=cylinder];
+    CDN [label="CDN/Cache", shape=diamond];
+    LoadBalancer [label="Load Balancer"];
+    
+    Frontend [label="Frontend\n(Vue/Nuxt.js SPA)\n(Node.js Server)"];
+    Backend [label="Backend\n(Django REST Framework)"];
+    Database [label="Database\n(MySQL)", shape=cylinder];
+    StaticFiles [label="Static Files\n(Firebase Storage)", shape=cylinder];
+
+    // Relaciones
+    Internet -> CDN;
+    CDN -> LoadBalancer;
+    
+    LoadBalancer -> Frontend;
+    LoadBalancer -> Backend;
+
+    Frontend -> Backend [label="REST API Calls"];
+    Backend -> Database [label="Read/Write Operations"];
+    Backend -> StaticFiles [label="Static File Handling"];
+
+    // Agrupación para el cluster
+    subgraph cluster_0 {
+        label="Server Cluster";
+        style=dashed;
+        LoadBalancer;
+        Frontend;
+        Backend;
+    }
+}

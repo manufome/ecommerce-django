@@ -2,6 +2,8 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
 from mptt.models import MPTTModel, TreeForeignKey
+from django.utils import timezone
+import math
 
 class Category(MPTTModel):
     name = models.CharField(max_length=255)
@@ -29,6 +31,7 @@ class Product(models.Model):
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     discount = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(100)])
+    discount_end_date = models.DateTimeField(null=True, blank=True)
     stock = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     is_new = models.BooleanField(default=False)
     is_top = models.BooleanField(default=False)
@@ -41,8 +44,15 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def get_display_price(self):
-        return [self.price - (self.price * self.discount / 100), self.price]
+        discounted_price = self.price - (self.price * self.discount / 100)
+        rounded_discounted_price = math.ceil(discounted_price / 50) * 50
+        return [rounded_discounted_price, self.price]
 
+    def check_discount(self):
+        if self.discount_end_date:
+            return self.discount_end_date > timezone.now()
+        return False
+    
     def __str__(self):
         return self.name
 

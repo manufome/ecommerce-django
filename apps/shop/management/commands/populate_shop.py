@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 import pandas as pd
 import random
 import os
+from django.utils import timezone
 
 class Command(BaseCommand):
     help = 'Populates the database with product data from a CSV file'
@@ -19,6 +20,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR('File not found!'))
             return
         data.drop_duplicates(subset='producto', keep='first', inplace=True)
+        data.dropna(subset=['imagen'], inplace=True)
 
         self.stdout.write("Starting to populate the database...")
 
@@ -45,12 +47,16 @@ class Command(BaseCommand):
         for _, row in data.iterrows():
             category = subcategory_objs[row['subcategoria']]
             brand = random.choice(list(brand_objs.values()))
+            discount = random.randint(0, 25)
+            naive_discount_end_date = None if discount == 0 else pd.Timestamp.now() + pd.Timedelta(days=random.randint(1, 30))
+            discount_end_date = None if discount == 0 else timezone.make_aware(naive_discount_end_date)
             product = Product(
                 name=row['producto'],
                 slug=row['producto'].lower().replace(' ', '-').replace('/', '-').replace('.', ''),
                 description=f"Descripción de {row['producto']}",
-                price = int(row['precio'].split(' ')[1].replace('.', '').strip()),
-                discount=random.randint(0, 25),
+                price = round(int(row['precio'].split(' ')[1].replace('.', '').strip()) / 50) * 50,
+                discount=discount,
+                discount_end_date=discount_end_date,
                 stock=random.randint(0, 100),
                 is_new=random.choice([True, False]),
                 is_top=random.choice([True, False]),
@@ -64,7 +70,7 @@ class Command(BaseCommand):
 
             ProductImage.objects.create(
                 product=product,
-                url=f'https://via.placeholder.com/600x600.png?text={product.name}',
+                url=row['imagen'],
                 width=600,
                 height=600
             )

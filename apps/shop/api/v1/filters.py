@@ -2,7 +2,11 @@
 from apps.shop.models import Product, Category
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
-from django.db.models import F, ExpressionWrapper, DecimalField
+from django.db.models import F, ExpressionWrapper, DecimalField, Func
+
+class Ceil(Func):
+    function = 'CEIL'
+    arity = 1
 
 class ProductFilter(filters.FilterSet):
     category = filters.CharFilter(field_name='category__slug', method='filter_by_category')
@@ -26,16 +30,16 @@ class ProductFilter(filters.FilterSet):
     def filter_by_min_price(self, queryset, name, value):
         queryset = queryset.annotate(
             discount_price=ExpressionWrapper(
-                F('price') - (F('price') * F('discount') / 100),
+                Ceil((F('price') - (F('price') * F('discount') / 100)) / 50) * 50,
                 output_field=DecimalField()
             )
         )
         return queryset.filter(discount_price__gte=value)
-    
+
     def filter_by_max_price(self, queryset, name, value):
         queryset = queryset.annotate(
             discount_price=ExpressionWrapper(
-                F('price') - (F('price') * F('discount') / 100),
+                Ceil((F('price') - (F('price') * F('discount') / 100)) / 50) * 50,
                 output_field=DecimalField()
             )
         )
