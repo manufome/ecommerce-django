@@ -1,0 +1,169 @@
+digraph ER_Diagram {
+  // Definición de entidades y estilo general
+  node [shape=box, fontname="Roboto"];
+
+  // Entidades
+  User;
+  Category;
+  Brand;
+  Product;
+  ProductImage;
+  Wishlist;
+  Address;
+  Coupon;
+  Order;
+  OrderItem;
+  Payment;
+  Refund;
+
+  // Atributos para User
+  node [shape=ellipse];
+  id_user [label="id"];
+  username [label="username"];
+  password [label="password"];
+  email [label="email"];
+  User -> id_user;
+  User -> username;
+  User -> password;
+  User -> email;
+
+  // Atributos para Category
+  id_category [label="id"];
+  name_category [label="name"];
+  Category -> id_category;
+  Category -> name_category;
+
+  // Atributos para Brand
+  id_brand [label="id"];
+  name_brand [label="name"];
+  Brand -> id_brand;
+  Brand -> name_brand;
+
+  // Atributos para Product
+  id_product [label="id"];
+  name_product [label="name"];
+  price [label="price"];
+  stock [label="stock"];
+  Product -> id_product;
+  Product -> name_product;
+  Product -> price;
+  Product -> stock;
+
+  // Atributos para ProductImage
+  id_productimage [label="id"];
+  url [label="url"];
+  ProductImage -> id_productimage;
+  ProductImage -> url;
+
+  // Atributos para Wishlist
+  id_wishlist [label="id"];
+  Wishlist -> id_wishlist;
+
+  // Atributos para Address
+  id_address [label="id"];
+  locality [label="locality"];
+  Address -> id_address;
+  Address -> locality;
+
+  // Atributos para Coupon
+  id_coupon [label="id"];
+  code [label="code"];
+  discount_coupon [label="discount"];
+  Coupon -> id_coupon;
+  Coupon -> code;
+  Coupon -> discount_coupon;
+
+  // Atributos para Order
+  id_order [label="id"];
+  status_order [label="status"];
+  Order -> id_order;
+  Order -> status_order;
+
+  // Atributos para OrderItem
+  id_orderitem [label="id"];
+  quantity [label="quantity"];
+  OrderItem -> id_orderitem;
+  OrderItem -> quantity;
+
+  // Atributos para Payment
+  id_payment [label="id"];
+  amount [label="amount"];
+  status_payment [label="status"];
+  Payment -> id_payment;
+  Payment -> amount;
+  Payment -> status_payment;
+
+  // Atributos para Refund
+  id_refund [label="id"];
+  reason [label="reason"];
+  Refund -> id_refund;
+  Refund -> reason;
+
+  // Relaciones con cardinalidad y rombos
+
+  // Relaciones de User
+  node [shape=diamond];
+  has_wishlist [label="tiene"];
+  User -> has_wishlist;
+  has_wishlist -> Wishlist [label="1, N"];
+
+  has_address [label="tiene"];
+  User -> has_address;
+  has_address -> Address [label="1, N"];
+
+  places_order [label="realiza"];
+  User -> places_order;
+  places_order -> Order [label="1, N"];
+
+  // Relaciones de Category
+  is_parent_of [label="es padre de"];
+  Category -> is_parent_of;
+  is_parent_of -> Category [label="1, N (hijos)"];
+
+  contains_product [label="contiene"];
+  Category -> contains_product;
+  contains_product -> Product [label="1, N"];
+
+  // Relaciones de Brand
+  owns_product [label="posee"];
+  Brand -> owns_product;
+  owns_product -> Product [label="1, N"];
+
+  // Relaciones de Product
+  has_image [label="tiene"];
+  Product -> has_image;
+  has_image -> ProductImage [label="1, N"];
+
+  included_in_wishlist [label="incluido en"];
+  Wishlist -> included_in_wishlist;
+  included_in_wishlist -> Product [label="1, N"]
+
+  part_of_orderitem [label="parte de"];
+  Product -> part_of_orderitem;
+  part_of_orderitem -> OrderItem [label="1, N"]
+
+  // Relaciones de Order
+  billed_to [label="facturado a"];
+  Order -> billed_to;
+  billed_to -> Address [label="1, N (dirección de facturación)"];
+
+  shipped_to [label="enviado a"];
+  Order -> shipped_to;
+  shipped_to -> Address [label="1, N (dirección de envío)"];
+
+  uses_coupon [label="usa"];
+  Order -> uses_coupon;
+  uses_coupon -> Coupon [label="0, 1"];
+
+  contains_orderitem [label="contiene"];
+  Order -> contains_orderitem;
+  contains_orderitem -> OrderItem [label="1, N"];
+
+  has_payment [label="tiene"];
+  Order -> has_payment;
+  has_payment -> Payment [label="1, 1"];
+
+  may_have_refund [label="puede tener"];
+  Order -> may_have_refund;
+  may_have_refund -> Refund [label="1, 1"];
+}
