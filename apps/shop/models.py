@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from mptt.models import MPTTModel, TreeForeignKey
 from django.utils import timezone
 import math
+from django.core.exceptions import ValidationError
 
 class Category(MPTTModel):
     name = models.CharField(max_length=255)
@@ -43,13 +44,21 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def decrease_stock(self, quantity):
+        if self.stock < quantity:
+            raise ValidationError(f"Stock insuficiente para el producto {self.name}")
+        self.stock -= quantity
+        self.save()
+
     def get_display_price(self):
-        discounted_price = self.price - (self.price * self.discount / 100)
-        rounded_discounted_price = math.ceil(discounted_price / 50) * 50
-        return [rounded_discounted_price, self.price]
+        if self.check_discount():
+            discounted_price = self.price - (self.price * self.discount / 100)
+            rounded_discounted_price = math.ceil(discounted_price / 50) * 50
+            return [rounded_discounted_price, self.price]
+        return [self.price, self.price]
 
     def check_discount(self):
-        if self.discount_end_date:
+        if self.discount > 0 and self.discount_end_date:
             return self.discount_end_date > timezone.now()
         return False
     

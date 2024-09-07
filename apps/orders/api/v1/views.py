@@ -3,7 +3,7 @@ from apps.orders.models import Address, Order, OrderItem, Payment, Coupon, Refun
 from .serializers import AddressSerializer, OrderSerializer, OrderItemSerializer, PaymentSerializer, CouponSerializer, RefundSerializer, OrderCreateSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from apps.orders.choices import LOCALITIES, STREET_TYPES, ORDER_STATUS, PAYMENT_METHODS
+from apps.orders.choices import Locality, StreetType, OrderStatus, PaymentMethod
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from apps.shop.models import Product
@@ -66,10 +66,10 @@ class ChoicesView(APIView):
     def get(self, request):
         query_params = request.query_params
         data = {
-            'localities': [{'id': id, 'name': name} for id, name in LOCALITIES],
-            'street_types': [{'id': id, 'name': name} for id, name in STREET_TYPES],
-            'order_status': [{'id': id, 'name': name} for id, name in ORDER_STATUS],
-            'payment_methods': [{'id': id, 'name': name} for id, name in PAYMENT_METHODS],
+            'localities': [{'id': id, 'name': name} for id, name in Locality.choices],
+            'street_types': [{'id': id, 'name': name} for id, name in StreetType.choices],
+            'order_status': [{'id': id, 'name': name} for id, name in OrderStatus.choices],
+            'payment_methods': [{'id': id, 'name': name} for id, name in PaymentMethod.choices],
         }
         if query_params:
             data = {key: value for key, value in data.items() if query_params.get(key) == 'true'}

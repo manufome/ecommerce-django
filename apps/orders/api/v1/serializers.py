@@ -2,12 +2,25 @@ from rest_framework import serializers
 from apps.orders.models import Address, Order, OrderItem, Payment, Coupon, Refund
 from apps.shop.models import Product
 from apps.shop.api.v1.serializers import ProductSerializer
-from apps.orders.choices import PAYMENT_METHODS, ORDER_STATUS
+from apps.orders.choices import PaymentMethod, PaymentStatus, OrderStatus
+from django.db import transaction
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class AddressSerializer(serializers.ModelSerializer):
+    locality = serializers.SerializerMethodField()
+    
     class Meta:
         model = Address
         fields = ['first_name', 'last_name', 'email', 'phone', 'locality', 'street_type', 'street_value', 'number', 'complement']
+    
+    def get_locality(self, obj):
+        return {
+            'id': obj.locality,
+            'name': obj.get_locality_display()
+        }
 
 class OrderItemSerializer(serializers.ModelSerializer):
     product = ProductSerializer()
@@ -63,50 +76,51 @@ class OrderItemCreateSerializer(serializers.ModelSerializer):
 class OrderCreateSerializer(serializers.ModelSerializer):
     address = AddressSerializer()
     products = OrderItemCreateSerializer(many=True, write_only=True)
-    payment_method = serializers.ChoiceField(choices=PAYMENT_METHODS)
+    payment_method = serializers.ChoiceField(choices=PaymentMethod.choices)
     notes = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
         model = Order
         fields = ['address', 'products', 'payment_method', 'notes']
 
+    @transaction.atomic
     def create(self, validated_data):
         user = self.context['request'].user
         address_data = validated_data.pop('address')
         products_data = validated_data.pop('products')
         payment_method = validated_data.pop('payment_method')
         notes = validated_data.pop('notes', '')
-        
-        existing_address = Address.objects.filter(user=user, **address_data).first()
-        if existing_address:
-            address = existing_address
-        else:
-            address = Address.objects.create(user=user, **address_data)
-        
-        order = Order.objects.create(user=user, billing_address=address, shipping_address=address, status='P')
 
-        total_amount = 0
-        for product_data in products_data:
-            product = Product.objects.get(id=product_data['product_id'])
-            print('product', product)
-            quantity = product_data['qty']
-            price = product.get_display_price()[0]
-            OrderItem.objects.create(order=order, product=product, quantity=quantity, price=price)
-            total_amount += price * quantity
+        try:
+            with transaction.atomic():
+                address, _ = Address.objects.get_or_create(user=user, **address_data)
+                
+                order = Order.objects.create(
+                    user=user, 
+                    billing_address=address, 
+                    shipping_address=address, 
+                    status=OrderStatus.PENDING, 
+                    notes=notes
+                )
 
-        Payment.objects.create(order=order, amount=total_amount, payment_method=payment_method, status='P')
-
-        if notes:
-            order.notes = notes
-            order.save()
-
-        return order
+                total_amount = 0
+                for product_data in products_data:
+                    product = Product.objects.select_for_update().get(id=product_data['product_id'])
+                    quantity = product_data['qty']
+                    product.decrease_stock(quantity)
+                    price = product.get_display_price()[0]
+                    OrderItem.objects.create(order=order, product=product, quantity=quantity, price=price)
+                    total_amount += price * quantity
     
-
-    # class Order(models.Model):
-    # user = models.ForeignKey(User, on_delete=models.CASCADE)
-    # status = models.CharField(max_length=1, choices=ORDER_STATUS)
-    # created_at = models.DateTimeField(auto_now_add=True)
-    # billing_address = models.ForeignKey(Address, related_name='billing_address', on_delete=models.SET_NULL, null=True)
-    # shipping_address = models.ForeignKey(Address, related_name='shipping_address', on_delete=models.SET_NULL, null=True)
-    # notes = models.TextField(blank=True)
+                Payment.objects.create(
+                    order=order,
+                    amount=total_amount,
+                    payment_method=payment_method,
+                    status=PaymentStatus.PENDING
+                )
+                return order
+        except serializers.ValidationError as e:
+            raise e
+        except Exception as e:
+            logger.error(f"Error creating order: {str(e)}")
+            raise serializers.ValidationError("Error al crear el pedido. Por favor, inténtelo de nuevo.")
