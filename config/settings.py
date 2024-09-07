@@ -26,7 +26,14 @@ SECRET_KEY = (
     "django-insecure-$227hjjmuq2e!)o^@2&#2v#+(-=@$v362o@8g#s9!2)tjn1)1a"
 )
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost', 'web-production-f954.up.railway.app'
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://web-production-f954.up.railway.app'
+]
+
 
 
 # Application definition
