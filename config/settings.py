@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "apps.shipping",
     "apps.search",
     "apps.users",
+    "apps.shopmaster",
     "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt",

@@ -1,7 +1,7 @@
 from django.db import models
 from apps.shop.models import Product
 from django.contrib.auth.models import User
-from .choices import LOCALITIES, STREET_TYPES, ORDER_STATUS, PAYMENT_METHODS
+from .choices import Locality, StreetType, PaymentMethod, OrderStatus, PaymentStatus
 
 # https://django-payments.readthedocs.io/en/stable/usage.html
 # https://www.mercadopago.com.co/developers/es/docs/checkout-api/integration-configuration/pse#editor_6
@@ -9,8 +9,8 @@ from .choices import LOCALITIES, STREET_TYPES, ORDER_STATUS, PAYMENT_METHODS
 
 class Address(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    locality = models.CharField(max_length=3, choices=LOCALITIES)
-    street_type = models.CharField(max_length=3, choices=STREET_TYPES)
+    locality = models.CharField(max_length=3, choices=Locality.choices)
+    street_type = models.CharField(max_length=3, choices=StreetType.choices)
     street_value = models.CharField(max_length=255)
     number = models.CharField(max_length=255)
     complement = models.CharField(max_length=255)
@@ -29,13 +29,13 @@ class Coupon(models.Model):
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    status = models.CharField(max_length=1, choices=ORDER_STATUS)
+    status = models.CharField(max_length=1, choices=OrderStatus.choices)
     created_at = models.DateTimeField(auto_now_add=True)
     billing_address = models.ForeignKey(Address, related_name='billing_address', on_delete=models.SET_NULL, null=True)
     shipping_address = models.ForeignKey(Address, related_name='shipping_address', on_delete=models.SET_NULL, null=True)
     notes = models.TextField(blank=True)
     coupon = models.ForeignKey(Coupon, on_delete=models.CASCADE, null=True)
-    
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)  
@@ -45,9 +45,20 @@ class OrderItem(models.Model):
 class Payment(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+    shipping_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     timestamp = models.DateTimeField(auto_now_add=True)
-    payment_method = models.CharField(max_length=3, choices=PAYMENT_METHODS)
-    status = models.CharField(max_length=20)
+    payment_method = models.CharField(max_length=3, choices=PaymentMethod.choices)
+    status = models.CharField(max_length=1, choices=PaymentStatus.choices)
+
+    def calculate_shipping_cost(self):
+        if self.amount > 50000 or self.payment_method==PaymentMethod.IN_STORE:
+            return 0
+        return 7000
+    
+    def save(self, *args, **kwargs):
+        self.shipping_cost = self.calculate_shipping_cost()
+        self.amount += self.shipping_cost
+        super().save(*args, **kwargs)
 
 class Refund(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
