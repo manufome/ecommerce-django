@@ -98,7 +98,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(default='mysql://root:hmEUAcclhNZUPbhVsjwHlijRUJwxRQzW@mysql.railway.internal:3306/railway')
+    'default': dj_database_url.config(default='mysql://root:hmEUAcclhNZUPbhVsjwHlijRUJwxRQzW@autorack.proxy.rlwy.net:44614/railway')
 }
 
 
