@@ -34,6 +34,8 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 
 class PaymentSerializer(serializers.ModelSerializer):
+    status = serializers.CharField(source='get_status_display')
+    payment_method = serializers.CharField(source='get_payment_method_display')
     class Meta:
         model = Payment
         fields = '__all__'

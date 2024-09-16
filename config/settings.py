@@ -14,6 +14,8 @@ from pathlib import Path
 import dj_database_url
 from datetime import timedelta
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,18 +25,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = (
-    "django-insecure-$227hjjmuq2e!)o^@2&#2v#+(-=@$v362o@8g#s9!2)tjn1)1a"
-)
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
-ALLOWED_HOSTS = [
-    'localhost', 'web-production-f954.up.railway.app'
-]
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://web-production-f954.up.railway.app'
-]
+CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
 
+CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', '').split(',')
 
 
 # Application definition
@@ -77,11 +74,6 @@ MIDDLEWARE = [
 
 
 
-CORS_ALLOW_ALL_ORIGINS = True
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:4002",
-# ]
-
 ROOT_URLCONF = "config.urls"
 
 
@@ -107,9 +99,8 @@ WSGI_APPLICATION = "config.wsgi.application"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(default='mysql://root:hmEUAcclhNZUPbhVsjwHlijRUJwxRQzW@autorack.proxy.rlwy.net:44614/railway')
+    'default': dj_database_url.config(default=os.environ.get('DB_URL'))
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -156,7 +147,7 @@ SIMPLE_JWT = {
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "es-co"
 
 TIME_ZONE = "America/Bogota"
 
@@ -179,8 +170,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-DEBUG = True
-
+DEBUG = os.environ.get('DEBUG')
 
 GRAPH_MODELS ={
     'all_applications': True,
