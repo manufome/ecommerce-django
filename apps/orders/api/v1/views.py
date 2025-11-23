@@ -21,11 +21,10 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
 
     def get_queryset(self):
-        return (
-            Order.objects.filter(user=self.request.user)
-            .select_related('billing_address', 'shipping_address')
-            .prefetch_related('orderitem_set', 'payment_set', 'refund_set')
-        )
+        queryset = Order.objects.select_related('billing_address', 'shipping_address').prefetch_related('orderitem_set', 'payment_set', 'refund_set')
+        if self.request.user.is_superuser:
+            return queryset.all()
+        return queryset.filter(user=self.request.user)
 
     def get_serializer_class(self):
         if self.action == 'create':

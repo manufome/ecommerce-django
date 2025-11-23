@@ -57,6 +57,9 @@ class OrderSerializer(serializers.ModelSerializer):
     shipping_address = AddressSerializer(read_only=True)
     billing_address = AddressSerializer(read_only=True)
     items_count = serializers.SerializerMethodField()
+    total = serializers.SerializerMethodField()
+    username = serializers.CharField(source='user.username', read_only=True)
+    email = serializers.CharField(source='user.email', read_only=True)
     status = serializers.CharField(source='get_status_display')
     created_at = serializers.DateTimeField(format='%d %b %Y')
 
@@ -66,6 +69,9 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def get_items_count(self, obj):
         return sum(item.quantity for item in obj.orderitem_set.all())
+
+    def get_total(self, obj):
+        return sum(item.subtotal for item in obj.orderitem_set.all())
 
 class OrderItemCreateSerializer(serializers.ModelSerializer):
     product_id = serializers.IntegerField(write_only=True)

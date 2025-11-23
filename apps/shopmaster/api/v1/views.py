@@ -119,6 +119,18 @@ def get_admin_overview(request):
             total_orders=Count('id'),
             total_profits=Sum('payment__amount')
         ).order_by('year')),
+
+        # Transacciones recientes
+        'recent_transactions': list(Order.objects.all().order_by('-created_at')[:5].values(
+            'id',
+            'user__first_name',
+            'user__last_name',
+            'user__email',
+            'status',
+            'created_at'
+        ).annotate(
+            amount=Sum('payment__amount')
+        )),
     }
 
     return JsonResponse(data)
