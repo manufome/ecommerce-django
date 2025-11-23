@@ -43,6 +43,10 @@ class Command(BaseCommand):
         brand_objs = {name: Brand.objects.create(name=name, slug=name.lower().replace(' ', '-')) for name in brands}
         user = User.objects.first()
 
+        # create admin if not exists
+        if not user:
+            user = User.objects.create_superuser('admin', 'admin@admin.com', 'admin')
+
         # Crear productos
         for _, row in data.iterrows():
             category = subcategory_objs[row['subcategoria']]
