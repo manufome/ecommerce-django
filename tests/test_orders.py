@@ -36,11 +36,11 @@ class OrderTests(APITestCase):
             'last_name': 'User',
             'email': 'test@example.com',
             'phone': '1234567890',
-            'locality': 'USA', # Usaquen
+            'locality': 'CHA', # Chapinero
             'street_type': 'CL', # Calle
-            'street_value': 'Main St',
+            'street_value': '79a',
             'number': '123',
-            'complement': 'Apt 4B'
+            'complement': 'Apt 401'
         }
 
     def test_create_order(self):
@@ -55,7 +55,7 @@ class OrderTests(APITestCase):
                     'qty': 2
                 }
             ],
-            'payment_method': PaymentMethod.CASH_ON_DELIVERY, # Assuming this is a valid choice value
+            'payment_method': PaymentMethod.CASH_ON_DELIVERY,
             'notes': 'Test order'
         }
         

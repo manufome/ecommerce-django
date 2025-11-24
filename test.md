@@ -23,7 +23,7 @@ Este proyecto incluye **5 tests automatizados** que cubren los aspectos crítico
 | | `test_protected_route` | `GET /api/v1/auth/user/` (con header `Authorization: Bearer <access>` ) | — | **200 OK** – datos del usuario autenticado |
 | `tests/test_shop.py` | `test_home_data` | `GET /api/v1/shop/home/` | — | **200 OK** – estructura JSON con `best_selling`, `featured`, `latest`, `on_sale` y datos correctos de cada producto |
 | `tests/test_orders.py` | `test_create_order` | `POST /api/v1/orders/` | ```json
-{ "address": { "first_name": "Test", "last_name": "User", "email": "test@example.com", "phone": "1234567890", "locality": "USA", "street_type": "CL", "street_value": "Main St", "number": "123", "complement": "Apt 4B" }, "products": [{ "product_id": 1, "qty": 2 }], "payment_method": "CE", "notes": "" }
+{ "address": { "first_name": "Test", "last_name": "User", "email": "test@example.com", "phone": "1234567890", "locality": "CHA", "street_type": "CL", "street_value": "79a", "number": "123", "complement": "Apt 401" }, "products": [{ "product_id": 1, "qty": 2 }], "payment_method": "CE", "notes": "" }
 ``` | **201 Created** – orden guardada y **stock del producto decrementado** |
 
 ## Salida típica (verbosity 2)
