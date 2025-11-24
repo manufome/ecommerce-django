@@ -2,7 +2,6 @@
 # https://www.django-rest-framework.org/api-guide/filtering/  reference for filtering ✏
 
 from apps.shop.api.v1.serializers import ProductSerializer, CategorySerializer, BrandSerializer, HomeSerializer
-from apps.shop.api.v1.admin_serializers import AdminProductSerializer, AdminCategorySerializer, AdminBrandSerializer
 from apps.shop.models import Product, Category, Brand, Wishlist
 from rest_framework import viewsets, generics  
 from .filters import ProductFilter
@@ -36,19 +35,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     search_fields = ['name', 'description']
     ordering_fields = ['price', 'created_at']
 
-    def get_serializer_class(self):
-        if self.request.query_params.get('flat') == 'true':
-            return AdminProductSerializer
-        return ProductSerializer
-
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        
-        # If flat is requested, return standard retrieve response (no wrapping)
-        if self.request.query_params.get('flat') == 'true':
-            serializer = self.get_serializer(instance)
-            return Response(serializer.data)
-
         previous = Product.objects.filter(id__lt=instance.id).order_by('-id').first()
         next = Product.objects.filter(id__gt=instance.id).order_by('id').first()
         related = Product.objects.filter(category=instance.category).exclude(id=instance.id).order_by('?')[:4]
@@ -66,29 +54,12 @@ class ProductViewSet(viewsets.ModelViewSet):
         })
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all()
+    queryset = Category.objects.filter(parent=None)
     serializer_class = CategorySerializer
-
-    def get_serializer_class(self):
-        if self.request.query_params.get('flat') == 'true':
-            return AdminCategorySerializer
-        return CategorySerializer
-
-    def get_queryset(self):
-        if self.action == 'list':
-            if self.request.query_params.get('show_all') == 'true':
-                return Category.objects.all()
-            return Category.objects.filter(parent=None)
-        return Category.objects.all()
 
 class BrandViewSet(viewsets.ModelViewSet):
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
-
-    def get_serializer_class(self):
-        if self.request.query_params.get('flat') == 'true':
-            return AdminBrandSerializer
-        return BrandSerializer
 
 # class WishlistViewSet(viewsets.ModelViewSet):
 #     queryset = Wishlist.objects.all()

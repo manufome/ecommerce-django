@@ -11,6 +11,8 @@ El backend de **La Fortaleza** es una API RESTful robusta construida con **Djang
 -   **Manejo de Archivos**: Soporte para carga de imágenes de productos
 -   **Estructura**: Arquitectura modular basada en "apps" de Django
 
+Para más detalles sobre la arquitectura, esquemas de base de datos y guías de contribución, consulta la [carpeta de documentación](docs/).
+
 ## 🗂️ Estructura de Aplicaciones
 
 El proyecto está modularizado en las siguientes aplicaciones (`/apps`):
