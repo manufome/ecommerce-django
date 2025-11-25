@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "django_filters",
     "django_extensions",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -143,7 +144,8 @@ REST_FRAMEWORK = {
         'rest_framework.filters.OrderingFilter'
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 25
+    'PAGE_SIZE': 25,
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 
@@ -153,6 +155,16 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_LIFETIME': timedelta(days=30),
     'SLIDING_TOKEN_REFRESH_LIFETIME_LATE_USER': timedelta(days=1),
     'SLIDING_TOKEN_LIFETIME_LATE_USER': timedelta(days=30),
+}
+
+# DRF Spectacular Settings
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'La Fortaleza API',
+    'DESCRIPTION': 'API RESTful para la plataforma de e-commerce La Fortaleza. Incluye gestión de productos, categorías, pedidos, usuarios y más.',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SCHEMA_PATH_PREFIX': r'/api/v[0-9]',
 }
 
 # Internationalization
