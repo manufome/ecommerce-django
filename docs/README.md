@@ -95,8 +95,10 @@ El proyecto está modularizado en las siguientes aplicaciones (`/apps`):
 ## 📖 Documentación de la API
 
 Una vez iniciado el servidor, puedes acceder a la documentación interactiva en:
--   **Swagger UI**: `http://localhost:8000/docs/`
--   **ReDoc**: `http://localhost:8000/redoc/`
+-   **Swagger UI**: `http://localhost:8000/api/docs/`
+-   **ReDoc**: `http://localhost:8000/api/redoc/`
+
+![Swagger UI](images/api-docs.png)
 
 ## 📦 Despliegue
 

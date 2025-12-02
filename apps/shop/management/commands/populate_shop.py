@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.core.management import call_command
 from apps.shop.models import Category, Brand, Product, ProductImage, Wishlist
 from django.contrib.auth.models import User
 import pandas as pd
@@ -24,7 +25,7 @@ class Command(BaseCommand):
 
         self.stdout.write("Starting to populate the database...")
 
-        os.system('python manage.py clear_shop')
+        call_command('clear_shop')
         self.stdout.write("Cleared existing data")
 
         categories = set(data['categoria'].unique())
