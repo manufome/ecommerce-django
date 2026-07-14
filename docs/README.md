@@ -117,10 +117,10 @@ El proyecto incluye configuración para **Railway**:
 
 ## Autor
 
-**Manuel Forero** — Junior Web Developer
+**Manuel Forero** — Web Developer
 
 - GitHub: [@manufome](https://github.com/manufome)
-- LinkedIn: [Manuel Forero](https://linkedin.com/in/manuel-forero)
+- LinkedIn: [Manuel Forero](https://linkedin.com/in/manufome)
 
 ---
 
