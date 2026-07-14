@@ -1,110 +1,127 @@
-# 🔙 Backend - La Fortaleza API
+# Mi Tienda — Backend API
 
-El backend de **La Fortaleza** es una API RESTful robusta construida con **Django** y **Django Rest Framework (DRF)**. Su objetivo es servir como la fuente central de verdad para la plataforma de comercio electrónico, gestionando la lógica de negocio, la persistencia de datos y la seguridad.
+API RESTful para la plataforma de e-commerce **Mi Tienda**, construida con Django y Django Rest Framework.
 
-## ⚙️ Características Técnicas
+**Live Demo:** [https://web-production-b62672.up.railway.app](https://web-production-b62672.up.railway.app)
+**Swagger Docs:** [https://web-production-b62672.up.railway.app/api/docs/](https://web-production-b62672.up.railway.app/api/docs/)
 
--   **Framework**: Django 5.0 + DRF 3.15
--   **Base de Datos**: PostgreSQL (Producción) / SQLite (Desarrollo rápido)
--   **Autenticación**: JWT (JSON Web Tokens) vía `djangorestframework-simplejwt`
--   **Documentación**: Swagger/OpenAPI generado automáticamente con `drf-yasg`
--   **Manejo de Archivos**: Soporte para carga de imágenes de productos
--   **Estructura**: Arquitectura modular basada en "apps" de Django
+## Características
 
-Para más detalles sobre la arquitectura, esquemas de base de datos y guías de contribución, consulta la [carpeta de documentación](docs/).
+- **JWT Authentication** — login, registro, refresh token, blacklist
+- **Product Catalog** — productos, categorías (MPTT), marcas, imágenes
+- **Order System** — pedidos, direcciones, pagos, cupones, reembolsos
+- **Filtering** — filtros por categoría, marca, precio, novedades, búsqueda
+- **Pagination** — paginación LimitOffset con 25 items por página
+- **Admin Panel** — Django Jazzmin con interfaz personalizada
 
-## 🗂️ Estructura de Aplicaciones
+## Tech Stack
 
-El proyecto está modularizado en las siguientes aplicaciones (`/apps`):
+| Componente | Tecnología |
+|------------|------------|
+| Framework | Django 5.0 + DRF 3.15 |
+| Base de datos | PostgreSQL (producción) / SQLite (desarrollo) |
+| Autenticación | JWT via djangorestframework-simplejwt |
+| Documentación | drf-spectacular (OpenAPI/Swagger) |
+| Categorías | django-mptt (árbol jerárquico) |
+| Filtros | django-filter |
+| CORS | django-cors-headers |
+| Deploy | Railway + Gunicorn |
 
--   `users`: Gestión de usuarios, autenticación y perfiles.
--   `shop`: Catálogo de productos, categorías, marcas y gestión de inventario.
--   `orders`: Procesamiento de pedidos, carritos de compra y direcciones.
--   `payments`: Lógica de pagos y transacciones.
--   `shipping`: Cálculo de costos y gestión de envíos.
+## Estructura
 
-## 🚀 Instalación y Configuración
+```
+apps/
+├── users/        # Autenticación, perfiles, JWT
+├── shop/         # Productos, categorías, marcas, imágenes
+├── orders/       # Pedidos, direcciones, pagos, cupones
+├── payments/     # Lógica de pagos
+├── shipping/     # Costos y gestión de envíos
+├── search/       # Búsqueda
+└── shopmaster/   # Panel de administración
+```
+
+## Endpoints
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| POST | `/api/v1/auth/login/` | Obtener tokens JWT |
+| POST | `/api/v1/auth/login/refresh/` | Refrescar token |
+| POST | `/api/v1/auth/register/` | Registrar usuario |
+| GET | `/api/v1/auth/user/` | Perfil del usuario |
+| GET | `/api/v1/shop/home/` | Datos de la página principal |
+| GET | `/api/v1/shop/products/` | Lista de productos con filtros |
+| GET | `/api/v1/shop/products/:slug/` | Detalle de producto |
+| GET | `/api/v1/shop/categories/` | Árbol de categorías |
+| GET | `/api/v1/shop/brands/` | Lista de marcas |
+| GET | `/api/v1/orders/choices/` | Opciones de dirección/pago |
+| POST | `/api/v1/orders/orders/` | Crear pedido |
+| GET | `/api/v1/orders/addresses/` | Direcciones del usuario |
+| GET | `/api/docs/` | Swagger UI |
+
+## Instalación Local
 
 ### Prerrequisitos
--   Python 3.10 o superior
--   PostgreSQL (opcional para desarrollo, requerido para producción)
+- Python 3.12+
+- PostgreSQL (opcional — SQLite funciona para desarrollo)
 
 ### Pasos
 
-1.  **Clonar y entrar al directorio:**
-    ```bash
-    cd backend
-    ```
+```bash
+# Clonar
+git clone https://github.com/manufome/ecommerce-django.git
+cd ecommerce-django
 
-2.  **Crear entorno virtual:**
-    ```bash
-    python -m venv venv
-    # Windows
-    venv\Scripts\activate
-    # Linux/Mac
-    source venv/bin/activate
-    ```
+# Entorno virtual
+python3.12 -m venv venv
+source venv/bin/activate
 
-3.  **Instalar dependencias:**
-    ```bash
-    pip install -r requirements.txt
-    ```
+# Dependencias
+pip install -r requirements.txt
 
-4.  **Variables de Entorno:**
-    Crea un archivo `.env` en la raíz de `backend/` basándote en `.env.example`.
-    ```ini
-    DEBUG=True
-    SECRET_KEY=tu_clave_secreta_segura
-    ALLOWED_HOSTS=localhost,127.0.0.1
-    
-    # Base de datos (Ejemplo para PostgreSQL local)
-    DB_NAME=la_fortaleza_db
-    DB_USER=postgres
-    DB_PASSWORD=tu_password
-    DB_HOST=localhost
-    DB_PORT=5432
-    ```
+# Variables de entorno
+cp .env.example .env
+# Editar .env con tus valores
 
-5.  **Migraciones y Superusuario:**
-    ```bash
-    python manage.py migrate
-    python manage.py createsuperuser
-    ```
+# Migraciones
+python manage.py migrate
 
-6.  **Poblar la Base de Datos (Opcional):**
-    Para facilitar el desarrollo y pruebas, puedes poblar la base de datos con datos de ejemplo:
-    
-    **Opción A - Datos desde CSV:**
-    ```bash
-    python manage.py populate_shop data/products.csv
-    ```
-    Este comando lee un archivo CSV con productos reales y crea categorías, marcas, productos e imágenes.
-    
-    **Opción B - Datos Faker (Aleatorios):**
-    ```bash
-    python manage.py populate_shop_faker
-    ```
-    Genera 100 productos aleatorios con 5 categorías y 5 marcas usando la librería Faker.
+# Superusuario
+python manage.py createsuperuser
 
-7.  **Ejecutar Servidor:**
-    ```bash
-    python manage.py runserver
-    ```
-    La API estará disponible en `http://localhost:8000`.
+# Poblar datos de ejemplo
+python manage.py init_data
 
-## 📖 Documentación de la API
+# Servidor
+python manage.py runserver
+```
 
-Una vez iniciado el servidor, puedes acceder a la documentación interactiva en:
--   **Swagger UI**: `http://localhost:8000/api/docs/`
--   **ReDoc**: `http://localhost:8000/api/redoc/`
+La API estará en `http://localhost:8000`.
+Swagger docs en `http://localhost:8000/api/docs/`.
 
-![Swagger UI](images/api-docs.png)
+### Variables de Entorno
 
-## 📦 Despliegue
+| Variable | Descripción |
+|----------|-------------|
+| `SECRET_KEY` | Clave secreta de Django |
+| `DEBUG` | `True` en desarrollo, `False` en producción |
+| `ALLOWED_HOSTS` | Dominios permitidos (ej: `localhost,127.0.0.1`) |
+| `DB_URL` | URL de conexión a la base de datos |
+| `CORS_ALLOWED_ORIGINS` | Orígenes permitidos para CORS |
 
-El proyecto incluye archivos de configuración para despliegue en plataformas como **Heroku** o **Render**:
--   `Procfile`: Define el comando de ejecución con `gunicorn`.
--   `runtime.txt`: Especifica la versión de Python.
--   `whitenoise`: Configurado para servir archivos estáticos en producción.
+## Despliegue
 
-Para desplegar, asegúrate de configurar las variables de entorno en tu proveedor de hosting.
+El proyecto incluye configuración para **Railway**:
+- `Procfile` — ejecuta migraciones, seed data, y gunicorn
+- `runtime.txt` — especifica Python 3.12
+- `whitenoise` — sirve archivos estáticos en producción
+
+## Autor
+
+**Manuel Forero** — Junior Web Developer
+
+- GitHub: [@manufome](https://github.com/manufome)
+- LinkedIn: [Manuel Forero](https://linkedin.com/in/manuel-forero)
+
+---
+
+Backend del proyecto [Mi Tienda Frontend](https://github.com/manufome/ecommerce-react).

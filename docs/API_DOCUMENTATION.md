@@ -1,8 +1,8 @@
-# 📚 Documentación de la API - La Fortaleza
+# 📚 Documentación de la API - Mi Tienda
 
 ## Descripción
 
-La API de La Fortaleza utiliza **drf-spectacular** para generar documentación OpenAPI 3.0 automática y completa. Esto proporciona una interfaz interactiva para explorar y probar todos los endpoints de la API.
+La API de Mi Tienda utiliza **drf-spectacular** para generar documentación OpenAPI 3.0 automática y completa. Esto proporciona una interfaz interactiva para explorar y probar todos los endpoints de la API.
 
 ## 🚀 Acceso a la Documentación
 
@@ -89,8 +89,8 @@ La configuración de drf-spectacular está en `config/settings.py`:
 
 ```python
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'La Fortaleza API',
-    'DESCRIPTION': 'API RESTful para la plataforma de e-commerce La Fortaleza',
+    'TITLE': 'Mi Tienda API',
+    'DESCRIPTION': 'API RESTful para la plataforma de e-commerce Mi Tienda',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     'COMPONENT_SPLIT_REQUEST': True,

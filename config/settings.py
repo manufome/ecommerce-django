@@ -160,8 +160,8 @@ SIMPLE_JWT = {
 
 # DRF Spectacular Settings
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'La Fortaleza API',
-    'DESCRIPTION': 'API RESTful para la plataforma de e-commerce La Fortaleza. Incluye gestión de productos, categorías, pedidos, usuarios y más.',
+    'TITLE': 'Mi Tienda API',
+    'DESCRIPTION': 'API RESTful para la plataforma de e-commerce Mi Tienda. Incluye gestión de productos, categorías, pedidos, usuarios y más.',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     'COMPONENT_SPLIT_REQUEST': True,
@@ -170,11 +170,11 @@ SPECTACULAR_SETTINGS = {
 
 # Jazzmin Settings
 JAZZMIN_SETTINGS = {
-    "site_title": "La Fortaleza Admin",
-    "site_header": "La Fortaleza",
-    "site_brand": "La Fortaleza",
+    "site_title": "Mi Tienda Admin",
+    "site_header": "Mi Tienda",
+    "site_brand": "Mi Tienda",
     "welcome_sign": "Bienvenido al Panel de Administración",
-    "copyright": "La Fortaleza",
+    "copyright": "Mi Tienda",
     "search_model": ["auth.User", "shop.Product", "orders.Order"],
     "user_avatar": None,
     
