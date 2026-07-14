@@ -19,7 +19,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
     def get_children(self, obj):
         children = obj.get_children()
-        return [CategorySerializer(children, many=True).data]
+        return CategorySerializer(children, many=True).data
     
     def get_count(self, obj):
         subcategories = obj.get_descendants(include_self=True)
